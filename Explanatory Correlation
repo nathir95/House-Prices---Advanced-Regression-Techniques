@@ -1,0 +1,44 @@
+import pandas as pd
+import numpy as np 
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+train = pd.read_csv(r'Downloads\train.csv')
+
+test= pd.read_csv(r'Downloads\test.csv')
+
+train.shape,test.shape
+
+train.drop('Id',axis=1,inplace=True)
+test.drop('Id',axis=1,inplace=True)
+
+#train = pd.concat([train,test], axis=0)
+
+
+corr = train.drop('SalePrice', axis=1).corrwith(train['SalePrice']).sort_values(ascending= False)
+
+
+fig, axes = plt.subplots(1,1, figsize= (15,9))
+
+fig.patch.set_facecolor('#000000')
+axes.patch.set_facecolor('#000000')
+
+
+axes.tick_params(axis= 'x', colors = 'white')
+axes.tick_params(axis = 'y', colors = 'white')
+
+
+axes.yaxis.set_ticks_position('none')
+axes.yaxis.label.set_color('white')
+
+axes.grid(color='#354555', linewidth=.7)
+axes.axhline(corr.mean(), ls='--',color='white')
+axes.text(25.5,.31, "Average={:.3f}".format(corr.mean()),color='white',size=12,fontweight='bold')
+
+sns.barplot(y=corr,x=corr.index,palette='Spectral')
+
+
+plt.title('Correlation between Sale Price and Other Real Estate Features',size=25,color='white',y=1.03)
+plt.xticks(rotation=60);
+
