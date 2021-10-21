@@ -1,0 +1,80 @@
+train = pd.concat([train,test])
+
+train.drop('SalePrice', axis=1, inplace = True)
+
+from sklearn.preprocessing import LabelEncoder 
+
+categ_train = train.select_dtypes(object)
+num_train = train.select_dtypes(['int64','float64'])
+
+for col in categ_train:
+    le = LabelEncoder()
+    categ_train[col] = le.fit_transform(categ_train[col])
+    
+data_train = pd.concat([categ_train,num_train],axis=1)
+
+
+Missing_train = data_train.isnull().sum().sort_values(ascending=False)
+Missing_train = Missing_train[Missing_train > 0]
+percent = (data_train.isnull().sum()/data_train.isnull().count()*100).sort_values(ascending=False)
+percent = percent[percent>0]
+missing_data = pd.concat([Missing_train, percent], axis=1, keys=['Missing_train', 'Percent'])
+# missing_data = missing_data[missing_data > 0]
+f, ax = plt.subplots(figsize=(15, 6))
+plt.xticks(rotation='90')
+sns.barplot(x=missing_data.index, y=missing_data['Percent'])
+plt.xlabel('features', fontsize=15)
+plt.ylabel('Percent of missing values', fontsize=15)
+plt.title('Percent missing data by feature', fontsize=15)
+plt.show()
+
+missing_vars = ['PoolQC','MiscFeature','Alley','Fence','FireplaceQu']
+
+for var in missing_vars: 
+    data_train[var] = data_train[var].fillna('None')
+
+data_train['LotFrontage'] = data_train.groupby('Neighborhood')['LotFrontage'].transform(lambda lot: lot.fillna(lot.median()))
+
+garage_cat = ['GarageType', 'GarageFinish', 'GarageQual', 'GarageCond']
+garage_num = ['GarageYrBlt', 'GarageArea', 'GarageCars']
+
+for var in garage_cat: 
+    data_train[var] = data_train[var].fillna('None')
+    
+for var in garage_num: 
+    data_train[var] = data_train[var].fillna(0)
+
+bsmnt_num = ['BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF',
+              'TotalBsmtSF', 'BsmtFullBath', 'BsmtHalfBath']
+
+bsmnt_cat = ['BsmtQual', 'BsmtCond', 'BsmtExposure', 
+             'BsmtFinType1', 'BsmtFinType2']
+
+for var in bsmnt_num: 
+    data_train[var] = data_train[var].fillna(0)
+
+for var in bsmnt_cat: 
+    data_train[var] = data_train[var].fillna('None')
+# Masvnr - fill with none 
+data_train['MasVnrType'] = data_train['MasVnrType'].fillna("None")
+data_train['MasVnrArea'] = data_train['MasVnrArea'].fillna(0)
+
+# MS Zoning: fill with mode
+data_train['MSZoning'] = data_train['MSZoning'].fillna(data_train['MSZoning'].mode()[0])
+
+
+data_train.drop('Utilities', axis=1,inplace=True)
+
+
+data_train['Functional'] = data_train['Functional'].fillna('Typ')
+
+data_train['Electrical'] = data_train['Electrical'].fillna(data_train['Electrical'].mode()[0])
+data_train['KitchenQual'] = data_train['KitchenQual'].fillna(data_train['KitchenQual'].mode()[0])
+
+data_train['Exterior1st'] = data_train['Exterior1st'].fillna(data_train['Exterior1st'].mode()[0])
+data_train['Exterior2nd'] = data_train['Exterior2nd'].fillna(data_train['Exterior2nd'].mode()[0])
+
+
+data_train['SaleType'] = data_train['SaleType'].fillna(data_train['SaleType'].mode()[0])
+
+data_train['MSSubClass'] = data_train['MSSubClass'].fillna("None")
