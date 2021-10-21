@@ -1,0 +1,30 @@
+from sklearn.preprocessing import LabelEncoder 
+
+categ_train = train.select_dtypes(object)
+num_train = train.select_dtypes(['int64','float64'])
+
+for col in categ_train:
+    le = LabelEncoder()
+    categ_train[col] = le.fit_transform(categ_train[col])
+
+
+data_train = pd.concat([categ_train,num_train],axis=1)
+
+
+from scipy.stats import skew
+
+num = data_train.dtypes[data_train.dtypes != 'O'].index
+skew_var = data_train[num].apply(lambda var: skew(var.dropna())).sort_values(ascending=False)
+skew_var[:20]
+
+high_skew = skew_var[abs(skew_var) > .6]
+high_skew = high_skew.index
+
+data_train[high_skew] = np.log1p(data_train[high_skew])
+
+
+data_train = pd.get_dummies(data_train)
+data_train.fillna(data_train.mean(), inplace=True)
+
+train = data_train[:len(y)]
+test = data_train[len(y):]
