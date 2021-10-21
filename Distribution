@@ -1,0 +1,26 @@
+from scipy.stats import norm
+
+plt.figure(figsize=(15,9))
+
+mu, sigma = norm.fit(train['SalePrice'])
+
+sns.distplot(train['SalePrice'],fit=norm,color='b',rug=False,kde_kws={'shade':True,'color':'b','alpha':.2})
+
+
+plt.legend(['$\mu=$ {:.3f} and $\sigma=$ {:.3f}'.format(mu, sigma)],fontsize=14)
+
+plt.title('Distribution of Sale Price',size=25,fontweight='bold');
+
+
+train['SalePrice']=np.log1p(train['SalePrice'])
+y = train['SalePrice']
+
+plt.figure(figsize=(15,9))
+mu, sigma = norm.fit(train['SalePrice'])
+
+sns.distplot(train['SalePrice'],fit=norm,color='b',rug=False,kde_kws={'shade':True,'color':'b','alpha':.2})
+
+
+plt.legend(['$\mu=$ {:.3f} and $\sigma=$ {:.3f}'.format(mu, sigma)],fontsize=14)
+
+plt.title('Distribution of Adjusted Sale Price',size=25,fontweight='bold');
