@@ -3,6 +3,41 @@ from sklearn.model_selection import KFold, cross_val_score
 from sklearn.tree import DecisionTreeRegressor
 import xgboost as xgb
 
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, mean_squared_log_error
+
+
+y= data_train['SalePrice']
+X = data_train.drop('SalePrice', axis=1)
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=42)
+
+
+
+lr = LinearRegression(normalize= True)
+lr.fit(X,y)
+
+
+predictions = lr.predict(X_test)
+
+
+rmse = mean_squared_error(y_test, predictions)**0.5
+rmse
+
+
+
+
+
+
+
+
+
+
+
+
 n_folds = 5 
 
 def rmse_cv(model):
